@@ -76,11 +76,11 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
       - slack/notify:
-          # channel: 'project'
+          channel: 'project'
           event: fail
           template: basic_fail_1
       - slack/notify:
-          # channel: 'project'
+          channel: 'project'
           event: fail
           template: basic_fail_1
 
@@ -105,7 +105,7 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-build
       - slack/notify:
-          # channel: 'project'
+          channel: 'project'
           event: fail
           template: basic_fail_1
                 
@@ -130,7 +130,7 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
       - slack/notify:
-          # channel: 'project'
+          channel: 'project'
           event: fail
           template: basic_fail_1
             
@@ -155,7 +155,7 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-build
       - slack/notify:
-          # channel: 'project'
+          channel: 'project'
           event: fail
           template: basic_fail_1
 
@@ -180,7 +180,7 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
       - slack/notify:
-          # channel: 'project'
+          channel: 'project'
           event: fail
           template: basic_fail_1
 
@@ -220,13 +220,13 @@ jobs:
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - slack/notify:
-          # channel: 'project'
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          # channel: 'general'
+          channel: 'project'
           event: pass
           template: success_tagged_deploy_1
+      - slack/notify:
+          channel: 'project'
+          event: fail
+          template: basic_fail_1
 
   # configure-infrastructure:
     # docker:
@@ -240,7 +240,7 @@ jobs:
       # - run:
           # name: Install dependencies
           # command: |
-            Your code here
+            # Your code here
             # exit 1
       # - run:
           # name: Configure server
