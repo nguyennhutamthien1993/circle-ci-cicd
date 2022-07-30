@@ -27,7 +27,7 @@ commands:
     steps:
       - run:
           name: Revert migrations
-          # Add when this will run
+          when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
             SUCCESS = $(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<<parameters.workflow_id>>)
@@ -264,22 +264,38 @@ jobs:
           event: fail
           template: basic_fail_1
 
-  # run-migrations:
-    # docker:
-      # # Docker image here that supports NodeJS
-    # steps:
-      # # Checkout code from git
-      # - run:
-          # name: Run migrations
-          # command: |
-            # # Your code here
-            # exit 1
-      # - run:
-          # name: Send migration results to memstash
-          # command: |
-            # # Your code here
-            # exit 1
-     # # Here's where you will add some code to rollback on failure      
+  run-migrations:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Run migrations
+          command: |
+            cd backend
+            npm install
+            npm run migrations > migrations_dump.txt
+      - run:
+          name: Send migration status to kvdb.io
+          command: |
+            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+            then
+              curl https://kvdb.io/${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+            fi
+      - slack/notify:
+          channel: C03RNFP5CR1
+          event: pass
+          template: success_tagged_deploy_1
+      - slack/notify:
+          channel: C03RNFP5CR1
+          event: fail
+          template: basic_fail_1
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   # deploy-frontend:
     # docker:
