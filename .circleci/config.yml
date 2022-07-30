@@ -69,26 +69,26 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
 
-  # test-frontend:
-    # docker:
-      # - image: cimg/node:13.8.0
-    # steps:
-      # - checkout
-      # - restore_cache:
-          # keys: [frontend-build]
-      # - run:
-          # name: Install dependencies for frontend
-          # command: |
-            # cd frontend
-            # npm install
-      # - run:
-          # name: Test frontend
-          # command: |
-            # cd frontend
-            # npm run test
-      # - save_cache:
-          # paths: [frontend/node_modules]
-          # key: frontend-build
+  test-frontend:
+    docker:
+      - image: cimg/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Install dependencies for frontend
+          command: |
+            cd frontend
+            npm install
+      - run:
+          name: Test frontend
+          command: |
+            cd frontend
+            npm run test
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: frontend-build
                 
   # test-backend:
     # docker:
