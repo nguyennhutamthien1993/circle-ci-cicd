@@ -251,11 +251,19 @@ jobs:
             cd .circleci/ansible
             cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
-            ansible-playbook -i inventory.txt configure-server.yml
+            ansible-playbook -i inventory.txt configure-server.yml --private-key circle-ci-cicd-udapeople.pem
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - slack/notify:
+          channel: C03RNFP5CR1
+          event: pass
+          template: success_tagged_deploy_1
+      - slack/notify:
+          channel: C03RNFP5CR1
+          event: fail
+          template: basic_fail_1
 
   # run-migrations:
     # docker:
