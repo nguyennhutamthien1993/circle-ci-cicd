@@ -220,11 +220,9 @@ jobs:
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - slack/notify:
-          channel: 'project'
           event: pass
           template: success_tagged_deploy_1
       - slack/notify:
-          channel: 'project'
           event: fail
           template: basic_fail_1
 
