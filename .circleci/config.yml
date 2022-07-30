@@ -111,47 +111,47 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
             
-  # scan-frontend:
-    # docker:
-      # - image: cimg/node:13.8.0
-    # steps:
-      # - checkout
-      # - restore_cache:
-          # keys: [frontend-build]
-      # - run:
-          # name: Install dependencies for frontend
-          # command: |
-            # cd frontend
-            # npm install
-      # - run:
-          # name: Scan frontend
-          # command: |
-            # cd frontend
-            # npm run scan
-      # - save_cache:
-          # paths: [frontend/node_modules]
-          # key: frontend-build
+  scan-frontend:
+    docker:
+      - image: cimg/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Install dependencies for frontend
+          command: |
+            cd frontend
+            npm install
+      - run:
+          name: Scan frontend
+          command: |
+            cd frontend
+            npm audit --audit-level=critical
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: frontend-build
 
-  # scan-backend:
-    # docker:
-      # - image: cimg/node:13.8.0
-    # steps:
-      # - checkout
-      # - restore_cache:
-          # keys: [backend-build]
-      # - run:
-          # name: Install dependencies for backend
-          # command: |
-            # cd backend
-            # npm install
-      # - run:
-          # name: Scan backend
-          # command: |
-            # cd backend
-            # npm run scan
-      # - save_cache:
-          # paths: [backend/node_modules]
-          # key: backend-build
+  scan-backend:
+    docker:
+      - image: cimg/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Install dependencies for backend
+          command: |
+            cd backend
+            npm install
+      - run:
+          name: Scan backend
+          command: |
+            cd backend
+            npm audit --audit-level=critical
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-build
 
   # deploy-infrastructure:
     # docker:
@@ -334,10 +334,10 @@ workflows:
           requires: [build-frontend]
       - test-backend:
           requires: [build-backend]
-      # - scan-backend:
-          # requires: [build-backend]
-      # - scan-frontend:
-          # requires: [build-frontend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
       # - deploy-infrastructure:
           # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           # filters:
