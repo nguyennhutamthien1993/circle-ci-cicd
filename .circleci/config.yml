@@ -55,7 +55,7 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-build
       - slack/notify:
-          channel: 'project'
+          channel: C03RNFP5CR1
           event: fail
           template: basic_fail_1
 
@@ -76,11 +76,11 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
       - slack/notify:
-          channel: 'project'
+          channel: C03RNFP5CR1
           event: fail
           template: basic_fail_1
       - slack/notify:
-          channel: 'project'
+          channel: C03RNFP5CR1
           event: fail
           template: basic_fail_1
 
@@ -105,7 +105,7 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-build
       - slack/notify:
-          channel: 'project'
+          channel: C03RNFP5CR1
           event: fail
           template: basic_fail_1
                 
@@ -130,7 +130,7 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
       - slack/notify:
-          channel: 'project'
+          channel: C03RNFP5CR1
           event: fail
           template: basic_fail_1
             
@@ -155,7 +155,7 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-build
       - slack/notify:
-          channel: 'project'
+          channel: C03RNFP5CR1
           event: fail
           template: basic_fail_1
 
@@ -197,6 +197,7 @@ jobs:
               --tags Name=backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+              --region us-east-1
       - run:
           name: Ensure front-end infrastructure exist
           command: |
@@ -205,6 +206,7 @@ jobs:
               --tags Name=frontend-${CIRCLE_WORKFLOW_ID:0:7} \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+              --region us-east-1
               
       - run:
           name: Add back-end ip to ansible inventory
@@ -228,29 +230,30 @@ jobs:
           event: fail
           template: basic_fail_1
 
-  # configure-infrastructure:
-    # docker:
-      # - image: python:3.9.1-alpine3.12
-    # steps:
-      # - checkout
-      # - add_ssh_keys:
-          # fingerprints: ["4e:39:9e:ba:42:6b:61:16:82:ae:78:f3:72:0c:ff:5a"]
-      # - attach_workspace:
-          # at: ~/
-      # - run:
-          # name: Install dependencies
-          # command: |
-            # Your code here
-            # exit 1
-      # - run:
-          # name: Configure server
-          # command: |
-            # Your code here
-            # exit 1  
-      # - destroy-environment:
-          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      # - revert-migrations:
-          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+  configure-infrastructure:
+    docker:
+      - image: python:3.9.1-alpine3.12
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["8d:c1:87:0c:c5:cb:9f:84:16:3e:40:b5:7f:95:30:7b"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible aws-cli curl jq
+      - run:
+          name: Configure server
+          command: |
+            cd .circleci/ansible
+            cat inventory.txt
+            export ANSIBLE_HOST_KEY_CHECKING=False
+            ansible-playbook -i inventory.txt configure-server.yml
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   # run-migrations:
     # docker:
@@ -383,8 +386,8 @@ workflows:
           filters:
             branches:
               only: [main]
-      # - configure-infrastructure:
-          # requires: [deploy-infrastructure]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
       # - run-migrations:
           # requires: [configure-infrastructure]
       # - deploy-frontend:
