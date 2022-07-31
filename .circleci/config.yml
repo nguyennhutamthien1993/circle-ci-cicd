@@ -337,16 +337,15 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt update
+            sudo apt updgrade -y
             sudo apt install -y tar gzip curl
-            sudo apt install software-properties-common
-            # aws-cli
+            sudo apt install -y software-properties-common
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt update
+            sudo apt install -y ansible
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install
-            # ansible
-            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 6125E2A8C77F2818FB7BD15B93C4A3FD7BB9C367
-            sudo -E apt-add-repository --yes --update ppa:ansible/ansible
-            sudo apt install ansible
       - run:
           name: Get backend url
           command: |
