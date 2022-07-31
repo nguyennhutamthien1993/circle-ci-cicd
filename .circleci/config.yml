@@ -330,6 +330,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            sudo add-apt-repository --remove ppa:mc3man/trusty-media
             sudo apt update
             sudo apt install -y tar gzip curl software-properties-common
             # aws-cli
