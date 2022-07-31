@@ -2,7 +2,7 @@ version: 2.1
 
 orbs: 
   slack: circleci/slack@4.10.1
-  
+
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -242,8 +242,6 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt 
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - slack/notify:
           channel: C03RNFP5CR1
           event: pass
@@ -252,6 +250,8 @@ jobs:
           channel: C03RNFP5CR1
           event: fail
           template: basic_fail_1
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   configure-infrastructure:
     docker:
@@ -265,6 +265,12 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+      - run:
+          name: Install dependencies
+          command: |
             apk add --update ansible aws-cli curl jq
       - run:
           name: Configure server
@@ -273,8 +279,6 @@ jobs:
             cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i inventory.txt configure-server.yml
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - slack/notify:
           channel: C03RNFP5CR1
           event: pass
@@ -283,6 +287,8 @@ jobs:
           channel: C03RNFP5CR1
           event: fail
           template: basic_fail_1
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   run-migrations:
     docker:
@@ -322,7 +328,7 @@ jobs:
           event: fail
           template: basic_fail_1
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
@@ -363,8 +369,6 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
       - slack/notify:
           channel: C03RNFP5CR1
           event: pass
@@ -373,6 +377,8 @@ jobs:
           channel: C03RNFP5CR1
           event: fail
           template: basic_fail_1
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
                     
   deploy-backend:
     docker:
@@ -413,8 +419,6 @@ jobs:
             cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i inventory.txt deploy-backend.yml
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - slack/notify:
           channel: C03RNFP5CR1
           event: pass
@@ -423,6 +427,8 @@ jobs:
           channel: C03RNFP5CR1
           event: fail
           template: basic_fail_1
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   smoke-test:
     docker:
@@ -465,6 +471,10 @@ jobs:
           channel: C03RNFP5CR1
           event: fail
           template: basic_fail_1
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   cloudfront-update:
     docker:
@@ -492,6 +502,10 @@ jobs:
           channel: C03RNFP5CR1
           event: fail
           template: basic_fail_1
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   cleanup:
     docker:
@@ -521,6 +535,15 @@ jobs:
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             fi
+	    
+      - slack/notify:
+          channel: C03RNFP5CR1
+          event: pass
+          template: success_tagged_deploy_1
+      - slack/notify:
+          channel: C03RNFP5CR1
+          event: fail
+          template: basic_fail_1
             
 
 workflows:
