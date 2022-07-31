@@ -359,6 +359,9 @@ jobs:
              API_URL="http://${BACKEND_IP}:3030"
 
              echo "${API_URL}" >> frontend/.env
+      - save_cache:
+          paths: [frontend/.env]
+          key: frontend-env
       - run:
           name: Deploy frontend objects
           command: |
@@ -437,6 +440,8 @@ jobs:
       - image: python:3.9.1-alpine3.12
     steps:
       - checkout
+      - restore_cache:
+          keys: [frontend-env]
       - run:
           name: Install dependencies
           command: |
@@ -475,8 +480,6 @@ jobs:
           template: basic_fail_1
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - revert-migrations:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   cloudfront-update:
     docker:
@@ -505,8 +508,6 @@ jobs:
           event: fail
           template: basic_fail_1
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   cleanup:
@@ -546,8 +547,6 @@ jobs:
           event: fail
           template: basic_fail_1
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
             
 
