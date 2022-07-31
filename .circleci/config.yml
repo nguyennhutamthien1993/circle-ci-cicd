@@ -267,12 +267,6 @@ jobs:
           command: |
             apk add --update ansible aws-cli curl jq
       - run:
-          name: Install dependencies
-          command: |
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-      - run:
           name: Configure server
           command: |
             cd .circleci/ansible
@@ -297,6 +291,12 @@ jobs:
       - checkout
       - restore_cache:
           keys: [backend-build]
+      - run:
+          name: Install dependencies
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
       - run:
           name: Run migrations
           command: |
