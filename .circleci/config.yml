@@ -351,14 +351,15 @@ jobs:
       - run:
           name: Get backend url
           command: |
-             BACKEND_IP=$(aws ec2 describe-instances \
+            BACKEND_IP=$(aws ec2 describe-instances \
               --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text)
              
-             API_URL="http://${BACKEND_IP}:3030"
+            API_URL="http://${BACKEND_IP}:3030"
 
-             echo "${API_URL}" >> frontend/.env
+            echo "${API_URL}" >> frontend/backendurl.txt
+            cat frontend/backendurl.txt
       - save_cache:
           paths: [frontend/.env]
           key: frontend-env
@@ -450,7 +451,12 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            API_URL=$(cat frontend/.env)
+            BACKEND_IP=$(aws ec2 describe-instances \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text)
+             
+            API_URL="http://${BACKEND_IP}:3030"
 
             if curl -s $API_URL/api/status | grep "ok"
             then
@@ -465,7 +471,7 @@ jobs:
             echo ${URL} 
             if curl -s ${URL} | grep "Welcome"
             then
-              exit 0
+              exit 1
             else
               exit 1
             fi
