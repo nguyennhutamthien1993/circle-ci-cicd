@@ -495,7 +495,7 @@ jobs:
           event: fail
           template: basic_fail_1
 
-cleanup:
+  cleanup:
     docker:
       - image: python:3.9.1-alpine3.12
     steps:
