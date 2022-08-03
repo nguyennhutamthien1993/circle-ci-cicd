@@ -237,6 +237,7 @@ jobs:
               --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> .circleci/ansible/inventory.txt
+            cat .circleci/ansible/inventory.txt
       - run: yum -y install tar gzip
       - persist_to_workspace:
           root: ~/
@@ -360,7 +361,7 @@ jobs:
              
             API_URL="http://${BACKEND_IP}:3030"
 
-            echo "${API_URL}" >> frontend/.env
+            echo "API_URL=${API_URL}" >> frontend/.env
             cat frontend/.env
       - save_cache:
           paths: [frontend/.env]
@@ -558,6 +559,9 @@ jobs:
                       
             echo "Old Wokflow ID: $OldWorkflowID"
             echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
+            aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+            aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+            aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
       - slack/notify:
           channel: C03RNFP5CR1
           event: pass
