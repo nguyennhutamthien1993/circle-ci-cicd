@@ -360,8 +360,8 @@ jobs:
              
             API_URL="http://${BACKEND_IP}:3030"
 
-            echo "${API_URL}" >> frontend/backendurl.txt
-            cat frontend/backendurl.txt
+            echo "${API_URL}" >> frontend/.env
+            cat frontend/.env
       - save_cache:
           paths: [frontend/.env]
           key: frontend-env
