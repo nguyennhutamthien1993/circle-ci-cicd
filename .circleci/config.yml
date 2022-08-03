@@ -552,7 +552,7 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
-            export OldWorkflowID=cat lastWorkFlow.txt
+            export OldWorkflowID=$(cat lastWorkFlow.txt)
                       
             echo "Old Wokflow ID: $OldWorkflowID"
             echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
