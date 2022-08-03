@@ -507,7 +507,11 @@ jobs:
                       list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                       --no-paginate --output text) >> lastWorkFlow.txt
             echo "Old Wokflow ID: $OldWorkflowID"
+            echo "${OldWorkflowID}" >> lastWorkFlow.txt
             cat lastWorkFlow.txt
+      - save_cache:
+          paths: [lastWorkFlow.txt]
+          key: lastWorkFlow
       - persist_to_workspace:
           root: ~/
           paths:
@@ -541,8 +545,10 @@ jobs:
           command: |
             apk add --update curl
             pip install awscli
-      - attach_workspace:
-          at: ~/
+      - restore_cache:
+          keys: [lastWorkFlow]
+      # - attach_workspace:
+          # at: ~/
       - run:
           name: Remove old stacks and files
           command: |
