@@ -510,11 +510,11 @@ jobs:
                       list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                       --no-paginate --output text)
             echo "Old Wokflow ID: $OldWorkflowID"
-            echo "${OldWorkflowID}" > lastWorkFlow.txt
-            cat lastWorkFlow.txt
+            echo "${OldWorkflowID}" > lastWorkFlowId.txt
+            cat lastWorkFlowId.txt
       - save_cache:
-          paths: [lastWorkFlow.txt]
-          key: lastWorkFlow
+          paths: [lastWorkFlowId.txt]
+          key: lastWorkFlowId
       - run:
           name: Update cloudfront distribution
           command: |
@@ -545,11 +545,11 @@ jobs:
             apk add --update curl
             pip install awscli
       - restore_cache:
-          keys: [lastWorkFlow]
+          keys: [lastWorkFlowId]
       - run:
           name: Remove old stacks and files
           command: |
-            export OldWorkflowID=$(cat lastWorkFlow.txt)
+            export OldWorkflowID=$(cat lastWorkFlowId.txt)
                       
             echo "Old Wokflow ID: $OldWorkflowID"
             echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
