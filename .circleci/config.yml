@@ -510,7 +510,6 @@ jobs:
                       list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                       --no-paginate --output text)
             echo "Old Wokflow ID: $OldWorkflowID"
-            sudo rm lastWorkFlow.txt
             echo "${OldWorkflowID}" > lastWorkFlow.txt
             cat lastWorkFlow.txt
       - save_cache:
