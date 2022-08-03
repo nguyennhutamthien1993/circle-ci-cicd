@@ -508,17 +508,14 @@ jobs:
           command: |
             export OldWorkflowID=$(aws cloudformation \
                       list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-                      --no-paginate --output text) >> lastWorkFlow.txt
+                      --no-paginate --output text)
             echo "Old Wokflow ID: $OldWorkflowID"
-            echo "${OldWorkflowID}" >> lastWorkFlow.txt
+            sudo rm lastWorkFlow.txt
+            echo "${OldWorkflowID}" > lastWorkFlow.txt
             cat lastWorkFlow.txt
       - save_cache:
           paths: [lastWorkFlow.txt]
           key: lastWorkFlow
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/lastWorkFlow.txt
       - run:
           name: Update cloudfront distribution
           command: |
@@ -550,8 +547,6 @@ jobs:
             pip install awscli
       - restore_cache:
           keys: [lastWorkFlow]
-      # - attach_workspace:
-          # at: ~/
       - run:
           name: Remove old stacks and files
           command: |
