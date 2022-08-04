@@ -531,8 +531,8 @@ jobs:
           channel: C03RNFP5CR1
           event: fail
           template: basic_fail_1
-      # - destroy-environment:
-          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   cleanup:
     docker:
@@ -567,8 +567,8 @@ jobs:
           channel: C03RNFP5CR1
           event: fail
           template: basic_fail_1
-      # - destroy-environment:
-          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
             
 
 workflows:
