@@ -405,6 +405,8 @@ jobs:
             apk add --update ansible zip
             apk add --update openssh-client tar gzip
             pip install awscli
+            
+            echo "NODE_ENV=production" >> backend/.env
       - run:
           name: Package backend
           command: |
