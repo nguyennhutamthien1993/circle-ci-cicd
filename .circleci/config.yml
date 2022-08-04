@@ -514,7 +514,7 @@ jobs:
             cat lastWorkFlowId.txt
       - save_cache:
           paths: [lastWorkFlowId.txt]
-          key: ${CIRCLE_WORKFLOW_ID:0:7}-lastWorkFlowId
+          key: {{CIRCLE_WORKFLOW_ID:0:7}}-lastWorkFlowId
       - run:
           name: Update cloudfront distribution
           command: |
@@ -545,7 +545,7 @@ jobs:
             apk add --update curl
             pip install awscli
       - restore_cache:
-          keys: ${CIRCLE_WORKFLOW_ID:0:7}-lastWorkFlowId
+          keys: {{CIRCLE_WORKFLOW_ID:0:7}}-lastWorkFlowId
       - run:
           name: Remove old stacks and files
           command: |
@@ -553,12 +553,6 @@ jobs:
                       
             echo "Old Wokflow ID: $OldWorkflowID"
             echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
-            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
-            then
-              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
-            fi
       - slack/notify:
           channel: C03RNFP5CR1
           event: pass
