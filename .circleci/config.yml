@@ -545,7 +545,7 @@ jobs:
             apk add --update curl
             pip install awscli
       - restore_cache:
-          keys: {CIRCLE_WORKFLOW_ID:0:7}-lastWorkFlowId
+          keys: ${CIRCLE_WORKFLOW_ID:0:7}-lastWorkFlowId
       - run:
           name: Remove old stacks and files
           command: |
