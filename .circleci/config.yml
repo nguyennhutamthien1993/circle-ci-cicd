@@ -503,6 +503,8 @@ jobs:
           command: |
             apk add --update curl
             pip install awscli
+      - attach_workspace:
+          at: ~/
       - run:
           name: Install dependencies
           command: |
@@ -510,11 +512,15 @@ jobs:
                       list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                       --no-paginate --output text)
             echo "Old Wokflow ID: $OldWorkflowID"
-            echo "${OldWorkflowID}" > lastWorkFlowId.txt
-            cat lastWorkFlowId.txt
+            echo "${OldWorkflowID}" > lastWorkFlowFile.txt
+            cat lastWorkFlowFile.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/lastWorkFlowFile.txt
       - save_cache:
-          paths: [lastWorkFlowId.txt]
-          key: lastWorkFlowId-{{ CIRCLE_WORKFLOW_ID:0:7 }}
+          paths: [lastWorkFlowFile.txt]
+          key: lastWorkFlowId-{{ checksum "package-lock.json" }}
       - run:
           name: Update cloudfront distribution
           command: |
@@ -544,12 +550,12 @@ jobs:
           command: |
             apk add --update curl
             pip install awscli
-      - restore_cache:
-          keys: lastWorkFlowId-{{ CIRCLE_WORKFLOW_ID:0:7 }}
+      - attach_workspace:
+          at: ~/
       - run:
           name: Remove old stacks and files
           command: |
-            export OldWorkflowID=$(cat lastWorkFlowId.txt)
+            export OldWorkflowID=$(cat lastWorkFlowFile.txt)
                       
             echo "Old Wokflow ID: $OldWorkflowID"
             echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
