@@ -514,7 +514,7 @@ jobs:
             cat lastWorkFlowId.txt
       - save_cache:
           paths: [lastWorkFlowId.txt]
-          key: {{ CIRCLE_WORKFLOW_ID:0:7 }}-lastWorkFlowId
+          key: lastWorkFlowId-{{ CIRCLE_WORKFLOW_ID:0:7 }}
       - run:
           name: Update cloudfront distribution
           command: |
@@ -545,7 +545,7 @@ jobs:
             apk add --update curl
             pip install awscli
       - restore_cache:
-          keys: {{ CIRCLE_WORKFLOW_ID:0:7 }}-lastWorkFlowId
+          keys: lastWorkFlowId-{{ CIRCLE_WORKFLOW_ID:0:7 }}
       - run:
           name: Remove old stacks and files
           command: |
