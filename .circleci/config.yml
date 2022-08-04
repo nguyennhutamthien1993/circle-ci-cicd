@@ -362,6 +362,7 @@ jobs:
             API_URL="http://${BACKEND_IP}:3030"
 
             echo "API_URL=${API_URL}" >> frontend/.env
+            echo "NODE_ENV=production" >> frontend/.env
             cat frontend/.env
       - save_cache:
           paths: [frontend/.env]
